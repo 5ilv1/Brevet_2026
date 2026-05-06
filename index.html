@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Brevet 2026 — Quête finale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0: #0a0e1a;
+  --bg-1: #111827;
+  --bg-2: #1a2332;
+  --bg-3: #243044;
+  --line: #2d3a52;
+  --line-soft: #1f2a3d;
+  --text: #e5e9f0;
+  --text-dim: #94a3b8;
+  --text-faint: #64748b;
+  --accent: #00ff9f;
+  --accent-glow: rgba(0, 255, 159, 0.35);
+  --gold: #ffb800;
+  --gold-glow: rgba(255, 184, 0, 0.4);
+  --xp-grad: linear-gradient(90deg, #00ff9f 0%, #00d4ff 100%);
+
+  --c-fr: #ec4899;
+  --c-ma: #3b82f6;
+  --c-hg: #f59e0b;
+  --c-sc: #10b981;
+  --c-br: #ef4444;
+  --c-rp: #8b5cf6;
+  --c-off: #475569;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg-0);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 90px;
+  background-image:
+    radial-gradient(ellipse at top, rgba(0, 255, 159, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(45, 58, 82, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 58, 82, 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== HUD HEADER ========== */
+.hud {
+  background: linear-gradient(135deg, rgba(26, 35, 50, 0.95) 0%, rgba(36, 48, 68, 0.95) 100%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.hud::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--xp-grad);
+}
+
+.hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+  line-height: 1;
+}
+.subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.countdown {
+  text-align: right;
+}
+.countdown .lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.countdown .num {
+  font-family: 'VT323', monospace;
+  font-size: 36px;
+  color: var(--gold);
+  text-shadow: 0 0 12px var(--gold-glow);
+  line-height: 1;
+}
+.countdown .num .unit {
+  font-size: 14px;
+  color: var(--text-dim);
+  text-shadow: none;
+  margin-left: 2px;
+}
+
+/* XP bar */
+.xp-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.xp-row .pct {
+  color: var(--accent);
+  font-weight: 700;
+}
+.xp-bar {
+  height: 8px;
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.xp-fill {
+  height: 100%;
+  background: var(--xp-grad);
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 0 10px var(--accent-glow);
+  position: relative;
+}
+.xp-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shine 2.5s infinite;
+}
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Mini stats */
+.mini-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.mini-stat {
+  background: rgba(10, 14, 26, 0.6);
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+.mini-stat .v {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: var(--text);
+  line-height: 1;
+}
+.mini-stat .l {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ========== TODAY VIEW ========== */
+.section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 24px 0 12px 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  width: 12px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.today-card {
+  background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg-1) 100%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.today-card.subject-fr { border-left: 3px solid var(--c-fr); }
+.today-card.subject-ma { border-left: 3px solid var(--c-ma); }
+.today-card.subject-hg { border-left: 3px solid var(--c-hg); }
+.today-card.subject-sc { border-left: 3px solid var(--c-sc); }
+.today-card.subject-br { border-left: 3px solid var(--c-br); }
+.today-card.subject-rp { border-left: 3px solid var(--c-rp); }
+.today-card.subject-off { border-left: 3px solid var(--c-off); opacity: 0.7; }
+
+.today-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.today-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.today-quest {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.today-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tag-fr { background: rgba(236, 72, 153, 0.15); color: var(--c-fr); border: 1px solid rgba(236, 72, 153, 0.3); }
+.tag-ma { background: rgba(59, 130, 246, 0.15); color: var(--c-ma); border: 1px solid rgba(59, 130, 246, 0.3); }
+.tag-hg { background: rgba(245, 158, 11, 0.15); color: var(--c-hg); border: 1px solid rgba(245, 158, 11, 0.3); }
+.tag-sc { background: rgba(16, 185, 129, 0.15); color: var(--c-sc); border: 1px solid rgba(16, 185, 129, 0.3); }
+.tag-br { background: rgba(239, 68, 68, 0.15); color: var(--c-br); border: 1px solid rgba(239, 68, 68, 0.3); }
+.tag-rp { background: rgba(139, 92, 246, 0.15); color: var(--c-rp); border: 1px solid rgba(139, 92, 246, 0.3); }
+.tag-off { background: rgba(71, 85, 105, 0.15); color: var(--text-dim); border: 1px solid rgba(71, 85, 105, 0.3); }
+
+.steps {
+  margin: 16px 0;
+}
+.step {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(10, 14, 26, 0.6);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.step:active { transform: scale(0.98); }
+.step.done {
+  background: rgba(0, 255, 159, 0.06);
+  border-color: rgba(0, 255, 159, 0.3);
+}
+.step.done .step-content {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+
+.step-check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: all 0.2s ease;
+}
+.step.done .step-check {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.step.done .step-check::after {
+  content: '✓';
+  color: var(--bg-0);
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.step-content {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.step-content .timing {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.objective {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 184, 0, 0.06);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  border-radius: 8px;
+}
+.objective-icon {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--gold);
+}
+.objective-text {
+  font-size: 13px;
+  color: var(--text);
+  font-style: italic;
+}
+
+.complete-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--xp-grad);
+  border: none;
+  border-radius: 10px;
+  color: var(--bg-0);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.complete-btn:active { transform: scale(0.98); }
+.complete-btn.completed {
+  background: rgba(0, 255, 159, 0.15);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+/* ========== WEEKS VIEW ========== */
+.weeks-view { display: none; }
+.weeks-view.active { display: block; }
+.today-view.hidden { display: none; }
+.stats-view { display: none; }
+.stats-view.active { display: block; }
+
+.week-block {
+  margin-bottom: 24px;
+}
+.week-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+.week-num {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent-glow);
+  line-height: 1;
+}
+.week-info { flex: 1; }
+.week-theme {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.week-dates {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.week-progress {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.week-progress .done-count { color: var(--accent); font-weight: 700; }
+
+.day-card {
+  background: var(--bg-1);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.day-card.is-today {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.day-card.is-done { opacity: 0.6; }
+.day-card.is-off { opacity: 0.4; }
+
+.day-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+.day-header:active { background: rgba(255,255,255,0.02); }
+
+.day-status {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.day-card.is-done .day-status {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.day-card.is-done .day-status::after {
+  content: '✓';
+  color: var(--bg-0);
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.day-pill {
+  flex-shrink: 0;
+  width: 44px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+.day-pill .d-day { font-weight: 700; color: var(--text); font-size: 11px; }
+
+.day-meta {
+  flex: 1;
+  min-width: 0;
+}
+.day-quest {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.day-subject {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.day-card.subject-fr .day-subject { color: var(--c-fr); }
+.day-card.subject-ma .day-subject { color: var(--c-ma); }
+.day-card.subject-hg .day-subject { color: var(--c-hg); }
+.day-card.subject-sc .day-subject { color: var(--c-sc); }
+.day-card.subject-br .day-subject { color: var(--c-br); }
+.day-card.subject-rp .day-subject { color: var(--c-rp); }
+.day-card.subject-off .day-subject { color: var(--c-off); }
+
+.day-toggle {
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-dim);
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+.day-card.expanded .day-toggle { transform: rotate(180deg); }
+
+.day-body {
+  display: none;
+  padding: 0 14px 14px 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.day-card.expanded .day-body { display: block; }
+.day-body .step:last-child { margin-bottom: 0; }
+
+/* ========== STATS ========== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-1));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-card .v {
+  font-family: 'VT323', monospace;
+  font-size: 42px;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+  line-height: 1;
+}
+.stat-card .l {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.subject-stats {
+  background: var(--bg-1);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  padding: 16px;
+}
+.subject-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.subject-row:last-child { margin-bottom: 0; }
+.subject-name {
+  font-size: 12px;
+  font-weight: 600;
+  width: 80px;
+  flex-shrink: 0;
+}
+.subject-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-0);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.subject-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.subject-fr-fill { background: linear-gradient(90deg, var(--c-fr), #f472b6); }
+.subject-ma-fill { background: linear-gradient(90deg, var(--c-ma), #60a5fa); }
+.subject-hg-fill { background: linear-gradient(90deg, var(--c-hg), #fbbf24); }
+.subject-sc-fill { background: linear-gradient(90deg, var(--c-sc), #34d399); }
+.subject-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  width: 50px;
+  text-align: right;
+}
+
+.streak-card {
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.1), rgba(255, 184, 0, 0.02));
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-top: 12px;
+}
+.streak-card .flame { font-size: 32px; line-height: 1; }
+.streak-card .v {
+  font-family: 'VT323', monospace;
+  font-size: 36px;
+  color: var(--gold);
+  margin-top: 4px;
+  line-height: 1;
+}
+.streak-card .l {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.tip {
+  background: rgba(10, 14, 26, 0.6);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.tip strong { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+
+/* ========== BOTTOM NAV ========== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 14, 26, 0.95);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-faint);
+  transition: all 0.2s ease;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  gap: 4px;
+}
+.nav-item.active {
+  color: var(--accent);
+}
+.nav-item.active .nav-icon {
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+.nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 30px rgba(0, 255, 159, 0.6); }
+}
+.pulse { animation: pulseGlow 2s ease-in-out infinite; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.4s ease-out; }
+
+/* Level-up notification */
+.notif {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--xp-grad);
+  color: var(--bg-0);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 8px 30px var(--accent-glow);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 200;
+  pointer-events: none;
+}
+.notif.show { transform: translateX(-50%) translateY(0); }
+
+/* ========== DESKTOP TWEAKS ========== */
+@media (min-width: 720px) {
+  .title { font-size: 36px; }
+  .countdown .num { font-size: 48px; }
+  .today-quest { font-size: 24px; }
+  .step-content { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<div class="notif" id="notif"></div>
+
+<div class="app">
+
+  <!-- ========== HUD ========== -->
+  <div class="hud">
+    <div class="hud-row">
+      <div>
+        <div class="title">BREVET 2026</div>
+        <div class="subtitle">// Quête finale · 47 jours</div>
+      </div>
+      <div class="countdown">
+        <div class="lbl">J–</div>
+        <div class="num" id="countdown">--<span class="unit">jrs</span></div>
+      </div>
+    </div>
+
+    <div class="xp-row">
+      <span>XP · Progression</span>
+      <span class="pct" id="xpPct">0%</span>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+
+    <div class="mini-stats">
+      <div class="mini-stat">
+        <div class="v" id="msDone">0</div>
+        <div class="l">Quêtes faites</div>
+      </div>
+      <div class="mini-stat">
+        <div class="v" id="msTotal">0</div>
+        <div class="l">Total</div>
+      </div>
+      <div class="mini-stat">
+        <div class="v" id="msStreak">0🔥</div>
+        <div class="l">Série</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TODAY VIEW ========== -->
+  <div class="today-view" id="todayView">
+    <div class="section-title">Mission du jour</div>
+    <div id="todayContainer"></div>
+  </div>
+
+  <!-- ========== WEEKS VIEW ========== -->
+  <div class="weeks-view" id="weeksView">
+    <div class="section-title">Toutes les semaines</div>
+    <div id="weeksContainer"></div>
+  </div>
+
+  <!-- ========== STATS VIEW ========== -->
+  <div class="stats-view" id="statsView">
+    <div class="section-title">Statistiques</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="v" id="sgDone">0</div>
+        <div class="l">Quêtes complétées</div>
+      </div>
+      <div class="stat-card">
+        <div class="v" id="sgRemaining">0</div>
+        <div class="l">Restantes</div>
+      </div>
+    </div>
+
+    <div class="streak-card">
+      <div class="flame">🔥</div>
+      <div class="v" id="sgStreak">0</div>
+      <div class="l">Jours d'affilée</div>
+    </div>
+
+    <div class="section-title">Par matière</div>
+    <div class="subject-stats" id="subjectStats"></div>
+
+    <div class="tip">
+      <strong>// Astuce</strong>
+      Tenir un carnet d'erreurs (un cahier dédié) où tu notes les exercices ratés et la règle à retenir. Le relire le dimanche.
+    </div>
+    <div class="tip">
+      <strong>// Reset</strong>
+      Pour repartir de zéro : <button id="resetBtn" style="background:none;border:none;color:var(--c-br);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13px;">remettre à zéro toute la progression</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========== BOTTOM NAV ========== -->
+<div class="bottom-nav">
+  <button class="nav-item active" data-view="today">
+    <span class="nav-icon">⚔️</span>
+    <span>Aujourd'hui</span>
+  </button>
+  <button class="nav-item" data-view="weeks">
+    <span class="nav-icon">📜</span>
+    <span>Semaines</span>
+  </button>
+  <button class="nav-item" data-view="stats">
+    <span class="nav-icon">📊</span>
+    <span>Stats</span>
+  </button>
+</div>
+
+<script>
+// ============== DATA ==============
+// Code matières : fr=français, ma=maths, hg=histoire-géo-EMC, sc=sciences, br=brevet/bilan, rp=repos, off=jour off
+const SUBJECTS = {
+  fr: 'Français',
+  ma: 'Mathématiques',
+  hg: 'Histoire-Géo-EMC',
+  sc: 'Sciences',
+  br: 'Brevet / Bilan',
+  rp: 'Allégé',
+  off: 'OFF'
+};
+
+const PLAN = [
+  // ===== SEMAINE 1 : 8-14 mai =====
+  { week: 1, weekTheme: "Diagnostic et reprise des bases", weekRange: "8 → 14 mai",
+    date: "2026-05-08", day: "Ven.", subject: "br", quest: "Diagnostic des lacunes", objective: "Cartographie des lacunes établie",
+    steps: [
+      { t: "0-15 min", x: "Rassembler tout le matériel : cahiers de l'année, classeurs, manuels, dernières évaluations." },
+      { t: "15-35 min", x: "Lister par matière les chapitres où tu te sens fragile (à partir des bulletins et des notes)." },
+      { t: "35-50 min", x: "Noter sur une feuille les TOP 3 chapitres faibles par matière. Prioriser." },
+      { t: "50-60 min", x: "Imprimer et coller ce planning. Préparer un cahier dédié « révisions brevet »." }
+    ]},
+  { week: 1, date: "2026-05-09", day: "Sam.", subject: "ma", quest: "Théorème de Pythagore", objective: "Réflexe Pythagore acquis",
+    steps: [
+      { t: "Cours 15 min", x: "Théorème de Pythagore (énoncé direct + réciproque + contraposée). Recopier les 3 énoncés sur fiche." },
+      { t: "Exos 30 min", x: "3 exercices types brevet — calcul d'une longueur dans un triangle rectangle ; vérifier qu'un triangle est rectangle ; problème concret (échelle, hauteur)." },
+      { t: "Bilan 15 min", x: "Comparer avec un corrigé. Noter les erreurs dans le carnet d'erreurs." }
+    ]},
+  { week: 1, date: "2026-05-10", day: "Dim.", subject: "rp", quest: "Reprise légère", objective: "Consolider la semaine",
+    steps: [
+      { t: "15 min", x: "Relire les fiches faites cette semaine (diagnostic + Pythagore)." },
+      { t: "15 min", x: "Quiz oral avec papa/maman : 5 questions au hasard, juste à l'oral." }
+    ]},
+  { week: 1, date: "2026-05-11", day: "Lun.", subject: "fr", quest: "Nature et fonction des mots", objective: "Distinguer nature et fonction",
+    steps: [
+      { t: "Cours 20 min", x: "Natures (classes grammaticales) vs fonctions. Tableau récapitulatif : nom/verbe/adj/adv/dét/pronom + sujet/COD/COI/CC/attribut." },
+      { t: "Exos 30 min", x: "10 phrases — souligner le verbe, encadrer le sujet, identifier 2 fonctions par phrase." },
+      { t: "Bilan 10 min", x: "Noter les 3 confusions récurrentes (souvent COD/attribut, CC de lieu/de temps)." }
+    ]},
+  { week: 1, date: "2026-05-12", day: "Mar.", subject: "hg", quest: "Première Guerre mondiale", objective: "5 dates + carte mentale",
+    steps: [
+      { t: "Cours 20 min", x: "1ʳᵉ Guerre mondiale — 5 dates clés (1914, 1916 Verdun, avr. 1917 USA, oct. 1917 Russie, 11 nov. 1918)." },
+      { t: "Carte 25 min", x: "Carte mentale : centre = « 1ʳᵉ GM » ; branches = causes / acteurs / phases / nouvelles armes / bilan / Versailles." },
+      { t: "Quiz 15 min", x: "Interrogation orale sur les dates et notions (poilu, génocide arménien, civils, Versailles)." }
+    ]},
+  { week: 1, date: "2026-05-13", day: "Mer.", subject: "sc", quest: "Génétique (SVT)", objective: "Vocabulaire génétique fixé",
+    steps: [
+      { t: "Cours 20 min", x: "ADN, chromosomes, gènes, allèles. Définir chaque mot sur fiche." },
+      { t: "Schéma 20 min", x: "Schéma d'une cellule (noyau, chromosomes) + schéma transmission père-mère-enfant pour 1 caractère." },
+      { t: "Application 20 min", x: "1 exercice de génétique simple (groupe sanguin ou couleur des yeux)." }
+    ]},
+  { week: 1, date: "2026-05-14", day: "Jeu.", subject: "ma", quest: "Calcul littéral", objective: "Identités remarquables OK",
+    steps: [
+      { t: "Cours 15 min", x: "Distributivité simple, double distributivité, factorisation, identités remarquables (a+b)², (a-b)², (a+b)(a-b)." },
+      { t: "Exos 35 min", x: "5 exercices progressifs — développer 3(x+2), (x+3)(x-1), (x+5)², puis factoriser 4x²-9, etc." },
+      { t: "Bilan 10 min", x: "Afficher les 3 identités remarquables au mur du bureau." }
+    ]},
+
+  // ===== SEMAINE 2 : 15-21 mai =====
+  { week: 2, weekTheme: "Élargissement et méthodologie", weekRange: "15 → 21 mai",
+    date: "2026-05-15", day: "Ven.", subject: "fr", quest: "Valeurs des temps du passé", objective: "Identifier la valeur d'un temps",
+    steps: [
+      { t: "Cours 20 min", x: "Passé simple (action principale), imparfait (description, second plan), plus-que-parfait (antériorité)." },
+      { t: "Tableau 15 min", x: "Construire un tableau temps/valeur/exemple avec une phrase pour chaque." },
+      { t: "Exos 25 min", x: "Souligner les verbes d'un extrait littéraire et justifier le choix du temps employé." }
+    ]},
+  { week: 2, date: "2026-05-16", day: "Sam.", subject: "hg", quest: "Aires urbaines en France", objective: "Schéma + 3 exemples",
+    steps: [
+      { t: "Cours 20 min", x: "Définitions : ville-centre, banlieue, couronne périurbaine, aire d'attraction." },
+      { t: "Schéma 20 min", x: "Schéma type d'une aire urbaine. Apprendre 3 exemples (Paris, Lyon, Marseille)." },
+      { t: "Vocabulaire 20 min", x: "Métropolisation, étalement urbain, gentrification, ségrégation socio-spatiale." }
+    ]},
+  { week: 2, date: "2026-05-17", day: "Dim.", subject: "rp", quest: "Reprise légère", objective: "Maintien LV1 + lecture",
+    steps: [
+      { t: "20 min", x: "Vocabulaire LV1 : 30 mots/expressions thématiques (school, family, hobbies, environment) avec flashcards." },
+      { t: "10 min", x: "15 min de lecture libre en français (roman, magazine — entretient la fluidité)." }
+    ]},
+  { week: 2, date: "2026-05-18", day: "Lun.", subject: "ma", quest: "Théorème de Thalès", objective: "Repérer la configuration",
+    steps: [
+      { t: "Cours 15 min", x: "Théorème de Thalès (énoncé direct + réciproque). Bien noter : configuration triangle ou papillon." },
+      { t: "Exos 35 min", x: "3 exercices — calculer une longueur ; vérifier que deux droites sont parallèles ; problème (cône/pyramide tronquée)." },
+      { t: "Bilan 10 min", x: "Tracer toujours la figure et coder l'égalité de fractions avant de calculer." }
+    ]},
+  { week: 2, date: "2026-05-19", day: "Mar.", subject: "sc", quest: "Atomes, molécules, ions", objective: "Équilibrer une équation",
+    steps: [
+      { t: "Cours 20 min", x: "Différence atome/ion. Tableau périodique simplifié (H, C, N, O, Na, Cl, Fe, Cu)." },
+      { t: "Exos 30 min", x: "Écrire 5 formules chimiques + équilibrer 3 équations (combustion du méthane, formation de l'eau, etc.)." },
+      { t: "Bilan 10 min", x: "Fiche réflexe — équilibrer = compter les atomes de chaque côté." }
+    ]},
+  { week: 2, date: "2026-05-20", day: "Mer.", subject: "hg", quest: "Entre-deux-guerres", objective: "Tableau des 3 régimes",
+    steps: [
+      { t: "Cours 20 min", x: "Crises (1929), montée des totalitarismes (URSS stalinienne, Italie fasciste, Allemagne nazie)." },
+      { t: "Tableau 25 min", x: "3 colonnes — date d'arrivée au pouvoir, leader, idéologie, méthodes (parti unique, propagande, terreur)." },
+      { t: "Quiz 15 min", x: "Se faire interroger : qui ? quand ? comment ?" }
+    ]},
+  { week: 2, date: "2026-05-21", day: "Jeu.", subject: "fr", quest: "Dictée d'entraînement", objective: "Identifier ses erreurs types",
+    steps: [
+      { t: "Dictée 20 min", x: "Se faire dicter une dictée de niveau 3ᵉ (pioche sur dictee-fr.com ou ladictee.fr)." },
+      { t: "Auto-correction 15 min", x: "Souligner les erreurs au crayon, les classer (orthographe lexicale / grammaticale / accord / conjugaison)." },
+      { t: "Règle 25 min", x: "Revoir la règle correspondant à l'erreur la plus fréquente (souvent : accord du participe passé)." }
+    ]},
+
+  // ===== JOURS OFF (Pentecôte) =====
+  { week: 3, weekTheme: "Approfondissement (avec pont de Pentecôte)", weekRange: "22 → 28 mai",
+    date: "2026-05-22", day: "Ven.", subject: "off", quest: "OFF — Pont de Pentecôte", objective: "Repos",
+    steps: [{ t: "—", x: "Pas de révision. Profite !" }]},
+  { week: 3, date: "2026-05-23", day: "Sam.", subject: "off", quest: "OFF — Pont de Pentecôte", objective: "Repos",
+    steps: [{ t: "—", x: "Pas de révision. Profite !" }]},
+  { week: 3, date: "2026-05-24", day: "Dim.", subject: "off", quest: "OFF — Pont de Pentecôte", objective: "Repos",
+    steps: [{ t: "—", x: "Pas de révision. Profite !" }]},
+  { week: 3, date: "2026-05-25", day: "Lun.", subject: "ma", quest: "Trigonométrie", objective: "Maîtriser SOH-CAH-TOA",
+    steps: [
+      { t: "Cours 15 min", x: "Sin, cos, tan dans le triangle rectangle. Moyen mnémotechnique SOH-CAH-TOA." },
+      { t: "Exos 35 min", x: "3 exercices — calculer une longueur connaissant un angle ; calculer un angle connaissant deux longueurs ; problème (hauteur d'un arbre, inclinaison)." },
+      { t: "Bilan 10 min", x: "Vérifier le mode calculatrice (DEG, pas RAD)." }
+    ]},
+  { week: 3, date: "2026-05-26", day: "Mar.", subject: "sc", quest: "Technologie + Scratch", objective: "Lire un algorithme",
+    steps: [
+      { t: "Cours 20 min", x: "Objets techniques, chaîne d'énergie (source → distribution → conversion → utilisation), chaîne d'information." },
+      { t: "Scratch 25 min", x: "Analyser 1 programme Scratch (lecture de blocs, conditions, boucles). Annoter le rôle de chaque bloc." },
+      { t: "Application 15 min", x: "Modifier le programme pour un nouveau comportement (ex. ajouter une condition)." }
+    ]},
+  { week: 3, date: "2026-05-27", day: "Mer.", subject: "ma", quest: "Statistiques et probabilités", objective: "Lire et exploiter un tableau",
+    steps: [
+      { t: "Cours 15 min", x: "Moyenne (simple, pondérée), médiane, étendue, quartiles." },
+      { t: "Exos 35 min", x: "À partir d'un tableau de notes, calculer les 4 indicateurs. Construire un diagramme en bâtons." },
+      { t: "Probas 10 min", x: "Rappel — proba = nb cas favorables / nb cas total. 2 exemples (dé, urne)." }
+    ]},
+  { week: 3, date: "2026-05-28", day: "Jeu.", subject: "hg", quest: "France et UE dans le monde", objective: "3 cartes mémorisées",
+    steps: [
+      { t: "Cours 20 min", x: "Puissance économique, politique, militaire, culturelle, francophonie." },
+      { t: "Cartes 25 min", x: "Mémoriser 3 cartes — territoire ultramarin français, pays de la francophonie, ZEE française." },
+      { t: "Vocabulaire 15 min", x: "Puissance, soft power, ZEE, OIF, OTAN, Union européenne." }
+    ]},
+
+  // ===== SEMAINE 4 : 29 mai - 4 juin =====
+  { week: 4, weekTheme: "Entraînement format brevet", weekRange: "29 mai → 4 juin",
+    date: "2026-05-29", day: "Ven.", subject: "fr", quest: "Annale brevet — compréhension", objective: "Méthode citation/justification",
+    steps: [
+      { t: "Texte 15 min", x: "Lecture attentive d'un texte d'annale brevet (récit ou texte argumentatif). Surligner les indices clés." },
+      { t: "Questions 35 min", x: "Répondre aux 5-6 questions de compréhension. Toujours justifier en citant le texte." },
+      { t: "Auto-correction 10 min", x: "Comparer au corrigé. Vérifier la précision des citations et la qualité des réponses rédigées." }
+    ]},
+  { week: 4, date: "2026-05-30", day: "Sam.", subject: "off", quest: "OFF — Repos", objective: "Repos",
+    steps: [{ t: "—", x: "Pas de révision. Profite !" }]},
+  { week: 4, date: "2026-05-31", day: "Dim.", subject: "rp", quest: "Reprise légère — carnet d'erreurs", objective: "Comprendre ses erreurs",
+    steps: [
+      { t: "Reprise 15 min", x: "Relire le carnet d'erreurs — toutes les erreurs accumulées depuis 4 semaines." },
+      { t: "Refaire 15 min", x: "Refaire 2 exercices ratés (un en maths, un en français)." }
+    ]},
+  { week: 4, date: "2026-06-01", day: "Lun.", subject: "ma", quest: "Annale brevet — exos 1 et 2", objective: "Méthode brevet maths",
+    steps: [
+      { t: "Annale 45 min", x: "Exercices 1 et 2 d'une annale brevet 2024 — souvent calcul numérique, proportionnalité, pourcentages, lecture de graphique." },
+      { t: "Auto-correction 15 min", x: "Noter sur le carnet d'erreurs les points où tu as hésité. Refaire un exercice similaire si erreur." }
+    ]},
+  { week: 4, date: "2026-06-02", day: "Mar.", subject: "hg", quest: "EMC — République et laïcité", objective: "Vocabulaire EMC fixé",
+    steps: [
+      { t: "Cours 20 min", x: "République et laïcité — symboles, devise, valeurs ; loi 1905 et charte de la laïcité." },
+      { t: "Notions 20 min", x: "Fiche — citoyenneté, droits et devoirs, défense nationale (JDC), engagement, médias et liberté d'expression." },
+      { t: "Cas pratique 20 min", x: "À partir d'une affiche ou d'un article, identifier 3 valeurs républicaines mises en jeu." }
+    ]},
+  { week: 4, date: "2026-06-03", day: "Mer.", subject: "ma", quest: "Annale brevet — exos 3 et 4", objective: "Rédiger les justifications",
+    steps: [
+      { t: "Annale 45 min", x: "Exercices 3 et 4 d'une annale brevet — souvent géométrie (Thalès, Pythagore, trigo) + problème ouvert ou Scratch." },
+      { t: "Auto-correction 15 min", x: "Comparer au corrigé. Bien rédiger les justifications, pas juste les calculs." }
+    ]},
+  { week: 4, date: "2026-06-04", day: "Jeu.", subject: "hg", quest: "France depuis 1945", objective: "Frise + 5 dates clés",
+    steps: [
+      { t: "Cours 20 min", x: "IVe République, Ve République (1958, de Gaulle), décolonisation, Mai 68, alternance 1981." },
+      { t: "Frise 25 min", x: "Construire une frise sur 80 ans avec 8-10 dates clés et présidents successifs." },
+      { t: "Quiz 15 min", x: "Interrogation orale sur les dates." }
+    ]},
+
+  // ===== SEMAINE 5 : 5-11 juin — Annales fractionnées par thème =====
+  { week: 5, weekTheme: "Annales fractionnées par thème", weekRange: "5 → 11 juin",
+    date: "2026-06-05", day: "Ven.", subject: "br", quest: "Français — Grammaire (annale)", objective: "Type-brevet : grammaire",
+    steps: [
+      { t: "Annale 40 min", x: "Exercices de grammaire et compétences linguistiques d'une annale brevet (analyse de phrase, manipulation, réécriture)." },
+      { t: "Correction 20 min", x: "Comparer au corrigé. Refaire les exercices ratés sur fiche." }
+    ]},
+  { week: 5, date: "2026-06-06", day: "Sam.", subject: "br", quest: "Français — Compréhension (annale)", objective: "Type-brevet : compréhension",
+    steps: [
+      { t: "Annale 45 min", x: "Questions de compréhension et d'interprétation sur le texte d'une annale (5-6 questions)." },
+      { t: "Correction 15 min", x: "Vérifier les citations et la qualité des justifications." }
+    ]},
+  { week: 5, date: "2026-06-07", day: "Dim.", subject: "rp", quest: "Reprise légère", objective: "Recul sur la semaine",
+    steps: [
+      { t: "Relecture 15 min", x: "Relire les fiches de la semaine et le carnet d'erreurs." },
+      { t: "Discussion 15 min", x: "Échanger avec papa/maman : qu'est-ce qui a été facile, difficile cette semaine ?" }
+    ]},
+  { week: 5, date: "2026-06-08", day: "Lun.", subject: "br", quest: "Français — Rédaction", objective: "1 rédaction structurée",
+    steps: [
+      { t: "Sujet 5 min", x: "Choisir un sujet de rédaction (imagination ou réflexion) parmi une annale." },
+      { t: "Plan 15 min", x: "Écrire un plan structuré au brouillon — intro/2-3 parties/conclusion." },
+      { t: "Rédaction 40 min", x: "Rédiger sur copie, soigner orthographe et présentation. Cible ≈ 300 mots." }
+    ]},
+  { week: 5, date: "2026-06-09", day: "Mar.", subject: "br", quest: "Maths — Numérique (annale)", objective: "Type-brevet : numérique",
+    steps: [
+      { t: "Annale 45 min", x: "Exercices brevet sur calcul numérique, proportionnalité, pourcentages, statistiques (env. 2 exercices)." },
+      { t: "Auto-correction 15 min", x: "Vérifier les calculs et la rédaction. Noter les types d'erreurs." }
+    ]},
+  { week: 5, date: "2026-06-10", day: "Mer.", subject: "br", quest: "Maths — Géométrie (annale)", objective: "Type-brevet : géométrie",
+    steps: [
+      { t: "Annale 45 min", x: "Exercice brevet de géométrie (Pythagore + Thalès + trigo combinés) ou Scratch/algorithmique." },
+      { t: "Auto-correction 15 min", x: "Vérifier la rédaction, les figures, les unités." }
+    ]},
+  { week: 5, date: "2026-06-11", day: "Jeu.", subject: "br", quest: "HG-EMC — Paragraphe argumenté", objective: "Méthode paragraphe acquise",
+    steps: [
+      { t: "Méthode 15 min", x: "Revoir la méthode du paragraphe argumenté — intro / arguments + exemples / conclusion." },
+      { t: "Rédaction 45 min", x: "Rédiger un paragraphe sur sujet brevet (ex. « Comment l'État français défend-il ses valeurs ? »)." }
+    ]},
+
+  // ===== SEMAINE 6 : 12-18 juin — Bilan + remédiation =====
+  { week: 6, weekTheme: "Bilan et remédiation ciblée", weekRange: "12 → 18 juin",
+    date: "2026-06-12", day: "Ven.", subject: "br", quest: "Bilan des annales", objective: "Plan de fin de parcours",
+    steps: [
+      { t: "Discussion 20 min", x: "Avec papa/maman : bilan des annales fractionnées de la semaine 5. Quels exercices ont posé problème ?" },
+      { t: "TOP 3 — 20 min", x: "Identifier 3 chapitres prioritaires à retravailler en semaine 6 (1 maths, 1 français, 1 HG ou sciences)." },
+      { t: "Plan 20 min", x: "Écrire le plan personnalisé pour les 6 jours suivants." }
+    ]},
+  { week: 6, date: "2026-06-13", day: "Sam.", subject: "ma", quest: "Maths — Lacune n°1", objective: "Lacune maths n°1 comblée",
+    steps: [
+      { t: "Cours 20 min", x: "Reprendre le cours du chapitre identifié comme TOP 1 maths." },
+      { t: "Exos 30 min", x: "5 exercices types brevet sur ce chapitre, du plus simple au plus difficile." },
+      { t: "Bilan 10 min", x: "Fiche-mémo synthétique (cas + méthode + piège classique)." }
+    ]},
+  { week: 6, date: "2026-06-14", day: "Dim.", subject: "rp", quest: "Reprise légère — flashcards", objective: "Vocabulaire au top",
+    steps: [
+      { t: "30 min", x: "Cartes de définitions toutes matières (maths, sciences, HG, EMC). 5 cartes par matière minimum." }
+    ]},
+  { week: 6, date: "2026-06-15", day: "Lun.", subject: "fr", quest: "Français — Réécriture", objective: "Améliorer un écrit",
+    steps: [
+      { t: "Reprise 15 min", x: "Relire la rédaction du lundi 8 juin avec les annotations." },
+      { t: "Réécriture 40 min", x: "Réécrire la rédaction en intégrant les améliorations (vocabulaire, ponctuation, structure)." },
+      { t: "Comparaison 5 min", x: "Comparer les deux versions — voir les progrès." }
+    ]},
+  { week: 6, date: "2026-06-16", day: "Mar.", subject: "hg", quest: "HG — 2 chapitres prioritaires", objective: "2 chapitres HG repris",
+    steps: [
+      { t: "Chapitre 1 — 30 min", x: "Réviser le chapitre HG identifié comme prioritaire — fiche + carte mentale." },
+      { t: "Chapitre 2 — 30 min", x: "Réviser un 2ᵉ chapitre HG identifié comme prioritaire." }
+    ]},
+  { week: 6, date: "2026-06-17", day: "Mer.", subject: "sc", quest: "Sciences — révisions ciblées", objective: "2 chapitres sciences",
+    steps: [
+      { t: "SVT 30 min", x: "Réviser 1 chapitre SVT susceptible de tomber (génétique, climat, immunité)." },
+      { t: "Physique 30 min", x: "Réviser 1 chapitre physique (énergie, électricité, mouvement, lumière)." }
+    ]},
+  { week: 6, date: "2026-06-18", day: "Jeu.", subject: "ma", quest: "Maths — Lacune n°2", objective: "Lacune maths n°2 comblée",
+    steps: [
+      { t: "Cours 15 min", x: "Reprendre le cours du chapitre identifié comme TOP 2 maths." },
+      { t: "Exos 35 min", x: "5 exercices types brevet, difficulté croissante." },
+      { t: "Bilan 10 min", x: "Fiche-mémo." }
+    ]},
+
+  // ===== SEMAINE 7 : 19-25 juin — Annales par discipline =====
+  { week: 7, weekTheme: "Annales par discipline et synthèse", weekRange: "19 → 25 juin",
+    date: "2026-06-19", day: "Ven.", subject: "ma", quest: "Annale maths complète", objective: "Validation maths",
+    steps: [
+      { t: "Annale 50 min", x: "1 annale brevet maths complète, mais en faisant 4 exercices à la suite avec un chrono indicatif (≈ 12 min/exo)." },
+      { t: "Auto-correction 10 min", x: "Comparer au corrigé, noter les points faibles encore présents." }
+    ]},
+  { week: 7, date: "2026-06-20", day: "Sam.", subject: "fr", quest: "Annale français", objective: "Validation français",
+    steps: [
+      { t: "Texte + grammaire 30 min", x: "Annale brevet partie compréhension + grammaire." },
+      { t: "Rédaction 30 min", x: "Écrire une rédaction courte (≈ 250 mots) sur sujet annale." }
+    ]},
+  { week: 7, date: "2026-06-21", day: "Dim.", subject: "rp", quest: "Détente active", objective: "Mode confiance",
+    steps: [
+      { t: "30 min", x: "Relire les fiches préférées, sans nouveau contenu. Mode confiance." }
+    ]},
+  { week: 7, date: "2026-06-22", day: "Lun.", subject: "hg", quest: "Annale HG-EMC", objective: "Validation HG-EMC",
+    steps: [
+      { t: "Travail sur document 30 min", x: "Exercice d'analyse de document(s) issu d'une annale brevet HG." },
+      { t: "Paragraphe 30 min", x: "Rédiger le paragraphe argumenté correspondant." }
+    ]},
+  { week: 7, date: "2026-06-23", day: "Mar.", subject: "sc", quest: "Annale sciences", objective: "Validation sciences",
+    steps: [
+      { t: "Annale 45 min", x: "1 annale brevet sciences (2 disciplines au choix : SVT/physique/techno)." },
+      { t: "Auto-correction 15 min", x: "Vérifier le respect des consignes, le vocabulaire scientifique, les unités." }
+    ]},
+  { week: 7, date: "2026-06-24", day: "Mer.", subject: "ma", quest: "Maths — Synthèse", objective: "Stabiliser les acquis",
+    steps: [
+      { t: "Relecture 30 min", x: "Relire toutes les fiches maths (Pythagore, Thalès, trigo, calcul littéral, statistiques)." },
+      { t: "Mini-exo 30 min", x: "1 exercice court sur chacun des 3 thèmes les plus importants. Pas de stress, juste pour vérifier." }
+    ]},
+  { week: 7, date: "2026-06-25", day: "Jeu.", subject: "fr", quest: "Français — Synthèse + Logistique J–1", objective: "Réviser sereinement + sac prêt",
+    steps: [
+      { t: "Relecture 30 min", x: "Relire les fiches grammaire, valeurs des temps, méthode de la rédaction." },
+      { t: "Logistique 15 min", x: "Préparer le sac : convocation, pièce d'identité, 2 stylos bleus, blanc, crayon, gomme, règle, calculatrice + piles." },
+      { t: "Sommeil", x: "Se coucher tôt. Pas d'écran après 21h." }
+    ]},
+
+  // ===== ÉPREUVES =====
+  { week: 8, weekTheme: "ÉPREUVES DU BREVET", weekRange: "26 → 30 juin",
+    date: "2026-06-26", day: "Ven.", subject: "br", quest: "BREVET — Jour 1 : Français", objective: "Jour J 1/3",
+    steps: [
+      { t: "9h-10h30", x: "FRANÇAIS — grammaire, compréhension, dictée." },
+      { t: "10h45-12h15", x: "FRANÇAIS — rédaction." },
+      { t: "Soir", x: "Ne pas refaire le sujet. Décompresser. Préparer le sac pour lundi." }
+    ]},
+  { week: 8, date: "2026-06-27", day: "Sam.", subject: "rp", quest: "Repos avant J2", objective: "Récupérer",
+    steps: [
+      { t: "Pause", x: "Détente totale. Tu peux relire des fiches si tu veux mais SANS pression." }
+    ]},
+  { week: 8, date: "2026-06-28", day: "Dim.", subject: "rp", quest: "Préparer J2", objective: "Sac et sommeil",
+    steps: [
+      { t: "Sac", x: "Préparer le sac pour lundi : convocation, pièce d'identité, trousse complète." },
+      { t: "Sommeil", x: "Se coucher tôt. Pas d'écran." }
+    ]},
+  { week: 8, date: "2026-06-29", day: "Lun.", subject: "br", quest: "BREVET — Jour 2 : HG, Sciences, LV", objective: "Jour J 2/3",
+    steps: [
+      { t: "9h-11h", x: "HISTOIRE-GÉOGRAPHIE-EMC." },
+      { t: "13h30-14h30", x: "SCIENCES (2 disciplines au choix communiquées par l'établissement)." },
+      { t: "15h-16h30", x: "LANGUE VIVANTE ÉTRANGÈRE (anglais ou autre)." }
+    ]},
+  { week: 8, date: "2026-06-30", day: "Mar.", subject: "br", quest: "BREVET — Jour 3 : Maths", objective: "FINI ! 🎉",
+    steps: [
+      { t: "9h-11h", x: "MATHÉMATIQUES." },
+      { t: "Soir", x: "FÉLICITATIONS ! 🎉 C'est fini, profite !" }
+    ]}
+];
+
+// ============== STATE ==============
+const STORAGE_KEY = 'brevet2026_v3';
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, stepsDone: {} }; // completed[date]=true; stepsDone[date]=[bool,bool,...]
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+// ============== HELPERS ==============
+const BREVET_DATE = new Date('2026-06-26T09:00:00');
+
+function todayISO() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function formatDateFR(iso) {
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const d = new Date(iso + 'T12:00:00');
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function isPast(iso) {
+  return iso < todayISO();
+}
+
+function findToday() {
+  const today = todayISO();
+  // 1) Match exact
+  let item = PLAN.find(p => p.date === today);
+  if (item) return item;
+  // 2) Avant le démarrage : afficher J1
+  if (today < PLAN[0].date) return PLAN[0];
+  // 3) Après le brevet : afficher dernier jour
+  const last = PLAN[PLAN.length - 1];
+  if (today > last.date) return last;
+  // 4) Sinon, prendre le prochain jour planifié
+  return PLAN.find(p => p.date >= today) || PLAN[0];
+}
+
+function calcStreak() {
+  // Streak = nombre de jours révision (non-OFF) consécutifs complétés en remontant depuis aujourd'hui
+  const today = todayISO();
+  let streak = 0;
+  // Parcours chronologique inversé jusqu'à aujourd'hui
+  for (let i = PLAN.length - 1; i >= 0; i--) {
+    const p = PLAN[i];
+    if (p.date > today) continue;
+    if (p.subject === 'off') continue; // les jours OFF n'interrompent pas
+    if (state.completed[p.date]) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function calcCountdown() {
+  const now = new Date();
+  const diff = BREVET_DATE - now;
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+function nonOffPlan() { return PLAN.filter(p => p.subject !== 'off'); }
+
+function calcStats() {
+  const all = nonOffPlan();
+  const done = all.filter(p => state.completed[p.date]).length;
+  return { done, total: all.length, remaining: all.length - done, pct: all.length ? Math.round(done / all.length * 100) : 0 };
+}
+
+function calcSubjectStats() {
+  const subs = ['fr', 'ma', 'hg', 'sc'];
+  return subs.map(s => {
+    const items = PLAN.filter(p => p.subject === s);
+    const done = items.filter(p => state.completed[p.date]).length;
+    return { code: s, name: SUBJECTS[s], done, total: items.length, pct: items.length ? (done / items.length * 100) : 0 };
+  });
+}
+
+function notify(text) {
+  const n = document.getElementById('notif');
+  n.textContent = text;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2200);
+}
+
+// ============== RENDER ==============
+function renderHud() {
+  document.getElementById('countdown').innerHTML = calcCountdown() + '<span class="unit">jrs</span>';
+  const stats = calcStats();
+  document.getElementById('xpFill').style.width = stats.pct + '%';
+  document.getElementById('xpPct').textContent = stats.pct + '%';
+  document.getElementById('msDone').textContent = stats.done;
+  document.getElementById('msTotal').textContent = stats.total;
+  document.getElementById('msStreak').textContent = calcStreak() + '🔥';
+}
+
+function renderToday() {
+  const item = findToday();
+  const c = document.getElementById('todayContainer');
+  const isOff = item.subject === 'off';
+  const isCompleted = !!state.completed[item.date];
+  const isToday = item.date === todayISO();
+  const stepsDone = state.stepsDone[item.date] || [];
+
+  let stepsHTML = item.steps.map((s, i) => {
+    const checked = stepsDone[i];
+    return `<div class="step ${checked ? 'done' : ''}" data-date="${item.date}" data-step="${i}">
+      <div class="step-check"></div>
+      <div class="step-content"><span class="timing">${s.t}</span>${s.x}</div>
+    </div>`;
+  }).join('');
+
+  let dateLabel = `${item.day} ${formatDateFR(item.date)}`;
+  if (isToday) dateLabel = `// AUJOURD'HUI · ${dateLabel}`;
+  else if (item.date > todayISO()) dateLabel = `// PROCHAINE · ${dateLabel}`;
+  else dateLabel = `// ${dateLabel}`;
+
+  c.innerHTML = `
+    <div class="today-card subject-${item.subject} fade-up ${isToday && !isCompleted && !isOff ? 'pulse' : ''}">
+      <div class="today-head">
+        <div>
+          <div class="today-date">${dateLabel}</div>
+          <div class="today-quest">${item.quest}</div>
+        </div>
+        <div class="today-tag tag-${item.subject}">${SUBJECTS[item.subject]}</div>
+      </div>
+      ${isOff ? '' : `<div class="steps">${stepsHTML}</div>`}
+      <div class="objective">
+        <span class="objective-icon">★</span>
+        <span class="objective-text">${item.objective}</span>
+      </div>
+      ${isOff ? '' : `<button class="complete-btn ${isCompleted ? 'completed' : ''}" data-date="${item.date}" id="completeBtn">
+        ${isCompleted ? '✓ Quête validée' : 'Marquer comme terminée'}
+      </button>`}
+    </div>
+  `;
+
+  // Bind step toggles
+  c.querySelectorAll('.step').forEach(el => {
+    el.addEventListener('click', () => {
+      const date = el.dataset.date;
+      const idx = parseInt(el.dataset.step);
+      if (!state.stepsDone[date]) state.stepsDone[date] = [];
+      state.stepsDone[date][idx] = !state.stepsDone[date][idx];
+      saveState();
+      renderToday();
+      renderWeeks();
+    });
+  });
+
+  const cb = document.getElementById('completeBtn');
+  if (cb) {
+    cb.addEventListener('click', () => {
+      const date = cb.dataset.date;
+      const wasCompleted = state.completed[date];
+      state.completed[date] = !wasCompleted;
+      saveState();
+      if (!wasCompleted) {
+        notify('+1 XP · Quête validée 🎯');
+      }
+      renderHud();
+      renderToday();
+      renderWeeks();
+      renderStats();
+    });
+  }
+}
+
+function renderWeeks() {
+  const container = document.getElementById('weeksContainer');
+  const weeks = {};
+  PLAN.forEach(p => {
+    if (!weeks[p.week]) weeks[p.week] = { theme: '', range: '', items: [] };
+    if (p.weekTheme) { weeks[p.week].theme = p.weekTheme; weeks[p.week].range = p.weekRange; }
+    weeks[p.week].items.push(p);
+  });
+
+  let html = '';
+  Object.keys(weeks).forEach(num => {
+    const w = weeks[num];
+    const nonOff = w.items.filter(i => i.subject !== 'off');
+    const done = nonOff.filter(i => state.completed[i.date]).length;
+
+    html += `<div class="week-block">
+      <div class="week-head">
+        <div class="week-num">S${num}</div>
+        <div class="week-info">
+          <div class="week-theme">${w.theme}</div>
+          <div class="week-dates">${w.range}</div>
+        </div>
+        <div class="week-progress"><span class="done-count">${done}</span>/${nonOff.length}</div>
+      </div>`;
+
+    w.items.forEach(item => {
+      const isOff = item.subject === 'off';
+      const isCompleted = !!state.completed[item.date];
+      const isToday = item.date === todayISO();
+      const stepsDone = state.stepsDone[item.date] || [];
+
+      html += `<div class="day-card subject-${item.subject} ${isCompleted ? 'is-done' : ''} ${isOff ? 'is-off' : ''} ${isToday ? 'is-today' : ''}" data-date="${item.date}">
+        <div class="day-header" data-toggle="${item.date}">
+          <div class="day-status"></div>
+          <div class="day-pill"><span class="d-day">${item.day}</span><br>${formatDateFR(item.date).replace(/\s/g, '\u00a0')}</div>
+          <div class="day-meta">
+            <div class="day-quest">${item.quest}</div>
+            <div class="day-subject">${SUBJECTS[item.subject]}</div>
+          </div>
+          <div class="day-toggle">▾</div>
+        </div>
+        <div class="day-body">
+          ${isOff ? '<div class="step"><div class="step-content">Pas de révision aujourd\'hui. Profite !</div></div>' :
+            item.steps.map((s, i) => {
+              const checked = stepsDone[i];
+              return `<div class="step ${checked ? 'done' : ''}" data-date="${item.date}" data-step="${i}">
+                <div class="step-check"></div>
+                <div class="step-content"><span class="timing">${s.t}</span>${s.x}</div>
+              </div>`;
+            }).join('')
+          }
+          <div class="objective">
+            <span class="objective-icon">★</span>
+            <span class="objective-text">${item.objective}</span>
+          </div>
+          ${isOff ? '' : `<button class="complete-btn ${isCompleted ? 'completed' : ''}" data-date="${item.date}" data-action="complete">
+            ${isCompleted ? '✓ Quête validée' : 'Marquer comme terminée'}
+          </button>`}
+        </div>
+      </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+
+  // Toggle expand
+  container.querySelectorAll('.day-header').forEach(el => {
+    el.addEventListener('click', () => {
+      el.parentElement.classList.toggle('expanded');
+    });
+  });
+
+  // Step toggles inside weeks view
+  container.querySelectorAll('.step').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const date = el.dataset.date;
+      const idx = parseInt(el.dataset.step);
+      if (isNaN(idx)) return;
+      if (!state.stepsDone[date]) state.stepsDone[date] = [];
+      state.stepsDone[date][idx] = !state.stepsDone[date][idx];
+      saveState();
+      renderWeeks();
+      renderToday();
+    });
+  });
+
+  // Complete buttons inside weeks view
+  container.querySelectorAll('[data-action="complete"]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const date = el.dataset.date;
+      const wasCompleted = state.completed[date];
+      state.completed[date] = !wasCompleted;
+      saveState();
+      if (!wasCompleted) notify('+1 XP · Quête validée 🎯');
+      renderHud();
+      renderWeeks();
+      renderToday();
+      renderStats();
+    });
+  });
+}
+
+function renderStats() {
+  const stats = calcStats();
+  document.getElementById('sgDone').textContent = stats.done;
+  document.getElementById('sgRemaining').textContent = stats.remaining;
+  document.getElementById('sgStreak').textContent = calcStreak();
+
+  const subStats = calcSubjectStats();
+  const ss = document.getElementById('subjectStats');
+  ss.innerHTML = subStats.map(s => `
+    <div class="subject-row">
+      <div class="subject-name" style="color: var(--c-${s.code})">${s.name}</div>
+      <div class="subject-bar"><div class="subject-fill subject-${s.code}-fill" style="width:${s.pct}%"></div></div>
+      <div class="subject-count">${s.done}/${s.total}</div>
+    </div>
+  `).join('');
+}
+
+// ============== NAVIGATION ==============
+function switchView(view) {
+  document.getElementById('todayView').classList.toggle('hidden', view !== 'today');
+  document.getElementById('weeksView').classList.toggle('active', view === 'weeks');
+  document.getElementById('statsView').classList.toggle('active', view === 'stats');
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.view === view);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => switchView(el.dataset.view));
+});
+
+// Reset
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Vraiment tout remettre à zéro ?')) {
+    state = { completed: {}, stepsDone: {} };
+    saveState();
+    renderHud();
+    renderToday();
+    renderWeeks();
+    renderStats();
+    notify('Progression réinitialisée');
+  }
+});
+
+// ============== INIT ==============
+renderHud();
+renderToday();
+renderWeeks();
+renderStats();
+
+// Refresh countdown every minute
+setInterval(renderHud, 60000);
+</script>
+</body>
+</html>
