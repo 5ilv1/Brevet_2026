@@ -848,7 +848,9 @@ body::before {
   </button>
 </div>
 
-<script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 // ============== DATA ==============
 // Code matières : fr=français, ma=maths, hg=histoire-géo-EMC, sc=sciences, br=brevet/bilan, rp=repos, off=jour off
 const SUBJECTS = {
@@ -1164,20 +1166,53 @@ const PLAN = [
     ]}
 ];
 
-// ============== STATE ==============
-const STORAGE_KEY = 'brevet2026_v3';
-let state = loadState();
+// ============== STATE & SYNC ==============
+const SUPABASE_URL = 'https://ktgfqulpndzetiyagupy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z2ZxdWxwbmR6ZXRpeWFndXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjg0NzgsImV4cCI6MjA5MzkwNDQ3OH0.FjdceOomhCVngIHAumVW8giG7vvyAFD4huv6FE8NREI';
+const ROW_ID = 'main';
+const CACHE_KEY = 'brevet2026_v3'; // cache local hors-ligne
 
-function loadState() {
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let state = loadCache();
+let saveTimer = null;
+
+function loadCache() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(CACHE_KEY);
     if (raw) return JSON.parse(raw);
   } catch (e) {}
-  return { completed: {}, stepsDone: {} }; // completed[date]=true; stepsDone[date]=[bool,bool,...]
+  return { completed: {}, stepsDone: {} };
+}
+
+function writeCache() {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(state)); } catch (e) {}
 }
 
 function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  writeCache();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    const { error } = await supabase
+      .from('progress')
+      .update({
+        completed: state.completed,
+        steps_done: state.stepsDone,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', ROW_ID);
+    if (error) console.warn('Sync DB échouée', error);
+  }, 250);
+}
+
+function applyRemoteState(row) {
+  state.completed = row.completed || {};
+  state.stepsDone = row.steps_done || {};
+  writeCache();
+  renderHud();
+  renderToday();
+  renderWeeks();
+  renderStats();
 }
 
 // ============== HELPERS ==============
@@ -1498,10 +1533,58 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 });
 
 // ============== INIT ==============
-renderHud();
-renderToday();
-renderWeeks();
-renderStats();
+async function init() {
+  // 1) Render immédiat depuis le cache local (paint rapide même offline)
+  renderHud();
+  renderToday();
+  renderWeeks();
+  renderStats();
+
+  // 2) Fetch frais depuis Supabase
+  const { data: remote, error } = await supabase
+    .from('progress')
+    .select('completed, steps_done')
+    .eq('id', ROW_ID)
+    .single();
+
+  if (error) {
+    console.warn('Fetch DB échoué, mode hors-ligne', error);
+  } else if (remote) {
+    const remoteHasData =
+      Object.keys(remote.completed || {}).length > 0 ||
+      Object.keys(remote.steps_done || {}).length > 0;
+    const cacheHasData =
+      Object.keys(state.completed || {}).length > 0 ||
+      Object.keys(state.stepsDone || {}).length > 0;
+
+    if (remoteHasData) {
+      applyRemoteState(remote);
+    } else if (cacheHasData) {
+      // Premier sync : on pousse le cache local vers la DB
+      saveState();
+    }
+  }
+
+  // 3) Realtime : changements live des autres appareils
+  supabase
+    .channel('progress-main')
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'progress', filter: `id=eq.${ROW_ID}` },
+      (payload) => applyRemoteState(payload.new))
+    .subscribe();
+
+  // 4) Re-fetch quand l'onglet redevient visible (coup de filet de sécurité)
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    const { data, error } = await supabase
+      .from('progress')
+      .select('completed, steps_done')
+      .eq('id', ROW_ID)
+      .single();
+    if (!error && data) applyRemoteState(data);
+  });
+}
+init();
 
 // Refresh countdown every minute
 setInterval(renderHud, 60000);
