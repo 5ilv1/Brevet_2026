@@ -302,6 +302,21 @@ body::before {
 .tag-rp { background: rgba(139, 92, 246, 0.15); color: var(--c-rp); border: 1px solid rgba(139, 92, 246, 0.3); }
 .tag-off { background: rgba(71, 85, 105, 0.15); color: var(--text-dim); border: 1px solid rgba(71, 85, 105, 0.3); }
 
+.duration-badge {
+  display: inline-block;
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: rgba(255, 184, 0, 0.12);
+  color: var(--gold);
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  text-transform: uppercase;
+}
+
 .steps {
   margin: 16px 0;
 }
@@ -910,11 +925,12 @@ const PLAN = [
       { t: "Carte 25 min", x: "Carte mentale : centre = « 1ʳᵉ GM » ; branches = causes / acteurs / phases / nouvelles armes / bilan / Versailles." },
       { t: "Quiz 15 min", x: "Interrogation orale sur les dates et notions (poilu, génocide arménien, civils, Versailles)." }
     ]},
-  { week: 1, date: "2026-05-13", day: "Mer.", subject: "sc", quest: "Génétique (SVT)", objective: "Vocabulaire génétique fixé",
+  { week: 1, date: "2026-05-13", day: "Mer.", subject: "sc", quest: "SVT : Génétique + évolution", objective: "ADN + sélection naturelle", duration: "1h15",
     steps: [
-      { t: "Cours 20 min", x: "ADN, chromosomes, gènes, allèles. Définir chaque mot sur fiche." },
-      { t: "Schéma 20 min", x: "Schéma d'une cellule (noyau, chromosomes) + schéma transmission père-mère-enfant pour 1 caractère." },
-      { t: "Application 20 min", x: "1 exercice de génétique simple (groupe sanguin ou couleur des yeux)." }
+      { t: "Génétique cours 25 min", x: "ADN, chromosomes, gènes, allèles. Schéma cellule + transmission père-mère-enfant. Vocabulaire à fixer." },
+      { t: "Génétique exo 15 min", x: "1 exercice (groupe sanguin ou couleur des yeux)." },
+      { t: "Évolution 25 min", x: "Théorie de Darwin : sélection naturelle, mutations, adaptation. Exemples : phalènes du bouleau, résistance aux antibiotiques. Notion d'ancêtre commun." },
+      { t: "Bilan 10 min", x: "Lien entre les deux : les mutations génétiques sont la matière première de l'évolution." }
     ]},
   { week: 1, date: "2026-05-14", day: "Jeu.", subject: "ma", quest: "Calcul littéral", objective: "Identités remarquables OK",
     steps: [
@@ -931,16 +947,18 @@ const PLAN = [
       { t: "Tableau 15 min", x: "Construire un tableau temps/valeur/exemple avec une phrase pour chaque." },
       { t: "Exos 25 min", x: "Souligner les verbes d'un extrait littéraire et justifier le choix du temps employé." }
     ]},
-  { week: 2, date: "2026-05-16", day: "Sam.", subject: "hg", quest: "Aires urbaines en France", objective: "Schéma + 3 exemples",
+  { week: 2, date: "2026-05-16", day: "Sam.", subject: "hg", quest: "Géo France : aires urbaines + espaces productifs + faible densité", objective: "3 types d'espaces compris", duration: "1h30",
     steps: [
-      { t: "Cours 20 min", x: "Définitions : ville-centre, banlieue, couronne périurbaine, aire d'attraction." },
-      { t: "Schéma 20 min", x: "Schéma type d'une aire urbaine. Apprendre 3 exemples (Paris, Lyon, Marseille)." },
-      { t: "Vocabulaire 20 min", x: "Métropolisation, étalement urbain, gentrification, ségrégation socio-spatiale." }
+      { t: "Aires urbaines 30 min", x: "Définitions : ville-centre, banlieue, couronne périurbaine. Schéma + 3 exemples (Paris, Lyon, Marseille). Vocabulaire : métropolisation, étalement urbain, gentrification." },
+      { t: "Espaces productifs 30 min", x: "Industrie (pôles aéronautique Toulouse, automobile, agroalimentaire), agriculture (productiviste vs durable), tourisme (1ʳᵉ destination mondiale), services et tertiaire." },
+      { t: "Espaces faible densité 20 min", x: "Diagonale du vide, espaces ruraux, montagnes, DROM. Atouts (qualité de vie, espaces préservés) et contraintes (services, accessibilité)." },
+      { t: "Bilan 10 min", x: "Carte mentale des 3 types d'espaces avec 1 exemple chacun." }
     ]},
-  { week: 2, date: "2026-05-17", day: "Dim.", subject: "rp", quest: "Reprise légère", objective: "Maintien LV1 + lecture",
+  { week: 2, date: "2026-05-17", day: "Dim.", subject: "ma", quest: "Statistiques et probabilités", objective: "Lire un tableau + calculer une proba",
     steps: [
-      { t: "20 min", x: "Vocabulaire LV1 : 30 mots/expressions thématiques (school, family, hobbies, environment) avec flashcards." },
-      { t: "10 min", x: "15 min de lecture libre en français (roman, magazine — entretient la fluidité)." }
+      { t: "Stats 25 min", x: "Moyenne (simple, pondérée), médiane, étendue, quartiles. À partir d'un tableau de notes, calculer les 4 indicateurs. Construire un diagramme en bâtons." },
+      { t: "Probas 25 min", x: "Proba = nb cas favorables / nb cas total. 3 exercices : dé équilibré, urne, jeu de cartes. Notion d'événement contraire." },
+      { t: "Bilan 10 min", x: "Fiche réflexe — moyenne ≠ médiane (savoir expliquer la différence). Toujours vérifier que les probas sont entre 0 et 1." }
     ]},
   { week: 2, date: "2026-05-18", day: "Lun.", subject: "ma", quest: "Thalès et triangles semblables", objective: "Thalès + similitude maîtrisés",
     steps: [
@@ -948,11 +966,11 @@ const PLAN = [
       { t: "Exos 30 min", x: "1 exo Thalès (calcul de longueur) + 1 exo triangles semblables (rapport k, longueurs proportionnelles) + 1 exo mixte." },
       { t: "Bilan 10 min", x: "Tableau comparatif Thalès / triangles semblables : quand utiliser quoi ? Tracer la figure et coder l'égalité de fractions avant de calculer." }
     ]},
-  { week: 2, date: "2026-05-19", day: "Mar.", subject: "sc", quest: "Atomes, molécules, ions", objective: "Équilibrer une équation",
+  { week: 2, date: "2026-05-19", day: "Mar.", subject: "sc", quest: "Chimie : Atomes, ions et réactions", objective: "Équilibrer + réactions clés", duration: "1h15",
     steps: [
-      { t: "Cours 20 min", x: "Différence atome/ion. Tableau périodique simplifié (H, C, N, O, Na, Cl, Fe, Cu)." },
-      { t: "Exos 30 min", x: "Écrire 5 formules chimiques + équilibrer 3 équations (combustion du méthane, formation de l'eau, etc.)." },
-      { t: "Bilan 10 min", x: "Fiche réflexe — équilibrer = compter les atomes de chaque côté." }
+      { t: "Atomes/ions 25 min", x: "Différence atome/ion. Tableau périodique simplifié (H, C, N, O, Na, Cl, Fe, Cu). Écrire 5 formules chimiques." },
+      { t: "Équilibrer 25 min", x: "Équilibrer 3 équations (combustion du méthane, formation de l'eau, formation du dioxyde de carbone)." },
+      { t: "Réactions clés 25 min", x: "Combustion (complète/incomplète, dégagement CO₂ et H₂O, danger CO). Réaction acide/base : test au pH (acide < 7 < basique). Réaction d'un métal avec un acide." }
     ]},
   { week: 2, date: "2026-05-20", day: "Mer.", subject: "hg", quest: "Entre-deux-guerres", objective: "Tableau des 3 régimes",
     steps: [
@@ -981,11 +999,12 @@ const PLAN = [
       { t: "Exos 35 min", x: "3 exercices — calculer une longueur connaissant un angle ; calculer un angle connaissant deux longueurs ; problème (hauteur d'un arbre, inclinaison)." },
       { t: "Bilan 10 min", x: "Vérifier le mode calculatrice (DEG, pas RAD)." }
     ]},
-  { week: 3, date: "2026-05-26", day: "Mar.", subject: "sc", quest: "Physique — Énergie et mouvement", objective: "Convertir des unités d'énergie",
+  { week: 3, date: "2026-05-26", day: "Mar.", subject: "sc", quest: "Physique : Énergie, mouvement, gravitation, lumière", objective: "Vue d'ensemble physique", duration: "1h30",
     steps: [
-      { t: "Cours 20 min", x: "Formes d'énergie (cinétique, potentielle, thermique, électrique, chimique). Conversion énergétique. Unité : le joule." },
-      { t: "Mouvement 20 min", x: "Vitesse, trajectoire, référentiel. Formule v = d/t. 3 calculs de vitesse avec conversions (m/s ↔ km/h)." },
-      { t: "Application 20 min", x: "1 exercice type brevet sur l'énergie (ex. consommation d'un appareil) + 1 sur le mouvement." }
+      { t: "Énergie 25 min", x: "Formes d'énergie (cinétique, potentielle, thermique, électrique, chimique). Conservation et transferts. Unité : le joule (J)." },
+      { t: "Mouvement 20 min", x: "Vitesse v = d/t. Référentiel, trajectoire. 2 calculs avec conversions (m/s ↔ km/h)." },
+      { t: "Gravitation 25 min", x: "Système solaire (Soleil + 8 planètes). Loi de la gravitation : tous les objets s'attirent. Poids vs masse (P = m × g, g = 9,8 N/kg sur Terre, ≈ 1,6 sur la Lune)." },
+      { t: "Lumière + son 20 min", x: "Lumière : vitesse 300 000 km/s, propagation rectiligne, couleurs. Son : vitesse 340 m/s dans l'air, fréquence (Hz), pas de son dans le vide." }
     ]},
   { week: 3, date: "2026-05-27", day: "Mer.", subject: "ma", quest: "Fonctions linéaire et affine", objective: "Maîtriser image et antécédent",
     steps: [
@@ -1002,11 +1021,11 @@ const PLAN = [
 
   // ===== SEMAINE 4 : 29 mai - 4 juin =====
   { week: 4, weekTheme: "Entraînement format brevet", weekRange: "29 mai → 4 juin",
-    date: "2026-05-29", day: "Ven.", subject: "fr", quest: "Annale brevet — compréhension", objective: "Méthode citation/justification",
+    date: "2026-05-29", day: "Ven.", subject: "fr", quest: "Annale compréhension + figures et énonciation", objective: "Méthode + figures + narrateur",
     steps: [
-      { t: "Texte 15 min", x: "Lecture attentive d'un texte d'annale brevet (récit ou texte argumentatif). Surligner les indices clés." },
-      { t: "Questions 35 min", x: "Répondre aux 5-6 questions de compréhension. Toujours justifier en citant le texte." },
-      { t: "Auto-correction 10 min", x: "Comparer au corrigé. Vérifier la précision des citations et la qualité des réponses rédigées." }
+      { t: "Texte 15 min", x: "Lecture attentive d'un texte d'annale brevet. Surligner les indices clés et identifier le narrateur (qui parle ? interne/externe/omniscient ?)." },
+      { t: "Questions 30 min", x: "Répondre aux 5-6 questions de compréhension. Toujours justifier en citant le texte." },
+      { t: "Figures + énonciation 15 min", x: "Repérer dans le texte 3 figures de style (métaphore, comparaison, hyperbole, personnification, énumération) + identifier le point de vue narratif. Fiche-mémo des figures les plus fréquentes." }
     ]},
   { week: 4, date: "2026-05-30", day: "Sam.", subject: "off", quest: "OFF — Repos", objective: "Repos",
     steps: [{ t: "—", x: "Pas de révision. Profite !" }]},
@@ -1020,30 +1039,32 @@ const PLAN = [
       { t: "Annale 45 min", x: "Exercices 1 et 2 d'une annale brevet 2024 — souvent calcul numérique, proportionnalité, pourcentages, lecture de graphique." },
       { t: "Auto-correction 15 min", x: "Noter sur le carnet d'erreurs les points où tu as hésité. Refaire un exercice similaire si erreur." }
     ]},
-  { week: 4, date: "2026-06-02", day: "Mar.", subject: "hg", quest: "EMC — République et laïcité", objective: "Vocabulaire EMC fixé",
+  { week: 4, date: "2026-06-02", day: "Mar.", subject: "hg", quest: "EMC complet : République + médias + défense + engagement", objective: "4 thèmes EMC fixés", duration: "1h15",
     steps: [
-      { t: "Cours 20 min", x: "République et laïcité — symboles, devise, valeurs ; loi 1905 et charte de la laïcité." },
-      { t: "Notions 20 min", x: "Fiche — citoyenneté, droits et devoirs, défense nationale (JDC), engagement, médias et liberté d'expression." },
-      { t: "Cas pratique 20 min", x: "À partir d'une affiche ou d'un article, identifier 3 valeurs républicaines mises en jeu." }
+      { t: "République et laïcité 20 min", x: "Symboles, devise, valeurs. Loi 1905 et charte de la laïcité." },
+      { t: "Médias et démocratie 20 min", x: "Liberté d'expression, rôle des médias, opinion publique, fake news, vérification de l'information." },
+      { t: "Défense + engagement 20 min", x: "Défense nationale (JDC obligatoire à 16 ans), service civique, engagement associatif, élections, vote." },
+      { t: "Cas pratique 15 min", x: "À partir d'une affiche ou d'un article, identifier 3 valeurs républicaines + 1 forme d'engagement citoyen mises en jeu." }
     ]},
   { week: 4, date: "2026-06-03", day: "Mer.", subject: "ma", quest: "Annale brevet — exos 3 et 4", objective: "Rédiger les justifications",
     steps: [
       { t: "Annale 45 min", x: "Exercices 3 et 4 d'une annale brevet — souvent géométrie (Thalès, Pythagore, trigo) + problème ouvert ou algorithmique simple." },
       { t: "Auto-correction 15 min", x: "Comparer au corrigé. Bien rédiger les justifications, pas juste les calculs." }
     ]},
-  { week: 4, date: "2026-06-04", day: "Jeu.", subject: "hg", quest: "France depuis 1945", objective: "Frise + 5 dates clés",
+  { week: 4, date: "2026-06-04", day: "Jeu.", subject: "hg", quest: "France 1945 + Guerre froide + Europe", objective: "Frise + 3 grands axes", duration: "1h30",
     steps: [
-      { t: "Cours 20 min", x: "IVe République, Ve République (1958, de Gaulle), décolonisation, Mai 68, alternance 1981." },
-      { t: "Frise 25 min", x: "Construire une frise sur 80 ans avec 8-10 dates clés et présidents successifs." },
-      { t: "Quiz 15 min", x: "Interrogation orale sur les dates." }
+      { t: "France 1945-2000 (30 min)", x: "IVe et Ve République (1958, de Gaulle), Mai 68, alternance 1981. Frise avec présidents successifs." },
+      { t: "Guerre froide (30 min)", x: "Bipolarisation USA/URSS, blocs Est/Ouest, mur de Berlin (1961-1989), crise de Cuba (1962), fin du communisme. Carte des deux blocs. Conflits indirects (Corée, Vietnam)." },
+      { t: "Décolonisation + Europe (30 min)", x: "Décolonisation : Inde 1947, Indochine 1954, Algérie 1962. Construction européenne : CECA 1951, Traité de Rome 1957, euro 2002, élargissements." }
     ]},
 
   // ===== SEMAINE 5 : 5-11 juin — Annales fractionnées par thème =====
   { week: 5, weekTheme: "Annales fractionnées par thème", weekRange: "5 → 11 juin",
-    date: "2026-06-05", day: "Ven.", subject: "br", quest: "Français — Grammaire (annale)", objective: "Type-brevet : grammaire",
+    date: "2026-06-05", day: "Ven.", subject: "br", quest: "Français — Grammaire + vocabulaire (annale)", objective: "Grammaire + champs lexicaux",
     steps: [
-      { t: "Annale 40 min", x: "Exercices de grammaire et compétences linguistiques d'une annale brevet (analyse de phrase, manipulation, réécriture)." },
-      { t: "Correction 20 min", x: "Comparer au corrigé. Refaire les exercices ratés sur fiche." }
+      { t: "Annale grammaire 30 min", x: "Exercices de grammaire et compétences linguistiques d'une annale brevet (analyse de phrase, manipulation, réécriture)." },
+      { t: "Vocabulaire 20 min", x: "Sur le texte de l'annale : repérer 2 champs lexicaux dominants. Identifier registre de langue (familier, courant, soutenu). Trouver synonymes/antonymes de 5 mots." },
+      { t: "Correction 10 min", x: "Comparer au corrigé. Refaire les exercices ratés sur fiche." }
     ]},
   { week: 5, date: "2026-06-06", day: "Sam.", subject: "off", quest: "OFF — Repos", objective: "Repos",
     steps: [{ t: "—", x: "Pas de révision. Profite !" }]},
@@ -1079,15 +1100,17 @@ const PLAN = [
       { t: "TOP 3 — 20 min", x: "Identifier 3 chapitres prioritaires à retravailler en semaine 6 (1 maths, 1 français, 1 HG ou sciences)." },
       { t: "Plan 20 min", x: "Écrire le plan personnalisé pour les 6 jours suivants." }
     ]},
-  { week: 6, date: "2026-06-13", day: "Sam.", subject: "ma", quest: "Maths — Lacune n°1", objective: "Lacune maths n°1 comblée",
+  { week: 6, date: "2026-06-13", day: "Sam.", subject: "ma", quest: "Équations et mise en équation", objective: "Résoudre une équation 1ᵉʳ degré",
     steps: [
-      { t: "Cours 20 min", x: "Reprendre le cours du chapitre identifié comme TOP 1 maths." },
-      { t: "Exos 30 min", x: "5 exercices types brevet sur ce chapitre, du plus simple au plus difficile." },
-      { t: "Bilan 10 min", x: "Fiche-mémo synthétique (cas + méthode + piège classique)." }
+      { t: "Cours 15 min", x: "Équation du 1ᵉʳ degré (ax + b = c) — méthode : isoler l'inconnue, attention aux signes. Cas particulier : équation produit (A × B = 0)." },
+      { t: "Exos 30 min", x: "5 équations à résoudre (croissant en difficulté) + 1 équation produit (factorisée ou à factoriser)." },
+      { t: "Mise en équation 15 min", x: "1 problème concret à mettre en équation (âge, périmètre, prix). Méthode : choisir l'inconnue, traduire la situation, résoudre, conclure." }
     ]},
-  { week: 6, date: "2026-06-14", day: "Dim.", subject: "rp", quest: "Reprise légère — flashcards", objective: "Vocabulaire au top",
+  { week: 6, date: "2026-06-14", day: "Dim.", subject: "ma", quest: "Proportionnalité et pourcentages", objective: "Calculer une évolution",
     steps: [
-      { t: "30 min", x: "Cartes de définitions toutes matières (maths, sciences, HG, EMC). 5 cartes par matière minimum." }
+      { t: "Proportionnalité 20 min", x: "Tableau de proportionnalité, 4ᵉ proportionnelle, coefficient. Vitesse, débit, échelle. 2 exercices types." },
+      { t: "Pourcentages 25 min", x: "Calculer un pourcentage d'une quantité (15% de 240). Augmentation (×1,15), réduction (×0,85). Pourcentage d'évolution. 3 exercices type brevet (soldes, hausse de prix)." },
+      { t: "Bilan 15 min", x: "Fiche — augmenter de 20% = ×1,2 / réduire de 20% = ×0,8 / augmenter puis baisser de 20% ne revient PAS au point de départ (faire le calcul)." }
     ]},
   { week: 6, date: "2026-06-15", day: "Lun.", subject: "fr", quest: "Français — Réécriture", objective: "Améliorer un écrit",
     steps: [
@@ -1095,21 +1118,24 @@ const PLAN = [
       { t: "Réécriture 40 min", x: "Réécrire la rédaction en intégrant les améliorations (vocabulaire, ponctuation, structure)." },
       { t: "Comparaison 5 min", x: "Comparer les deux versions — voir les progrès." }
     ]},
-  { week: 6, date: "2026-06-16", day: "Mar.", subject: "hg", quest: "HG — 2 chapitres prioritaires", objective: "2 chapitres HG repris",
+  { week: 6, date: "2026-06-16", day: "Mar.", subject: "hg", quest: "Géo : mondialisation + France/UE dans le monde", objective: "Mondialisation + 3 cartes", duration: "1h15",
     steps: [
-      { t: "Chapitre 1 — 30 min", x: "Réviser le chapitre HG identifié comme prioritaire — fiche + carte mentale." },
-      { t: "Chapitre 2 — 30 min", x: "Réviser un 2ᵉ chapitre HG identifié comme prioritaire." }
+      { t: "Mondialisation 30 min", x: "Définition, acteurs (FTN, États, ONG), espaces moteurs (Asie de l'Est, Amérique du Nord, Europe), flux (marchandises, capitaux, personnes, informations). Façades maritimes." },
+      { t: "France et UE 30 min", x: "Puissance économique, politique, militaire, culturelle. Francophonie, soft power, ZEE française (2ᵉ mondiale). Rôle dans l'UE et l'ONU." },
+      { t: "Cartes 15 min", x: "Mémoriser 3 cartes : pôles de la mondialisation, territoire ultramarin français, pays de la francophonie." }
     ]},
-  { week: 6, date: "2026-06-17", day: "Mer.", subject: "sc", quest: "Électricité + Corps humain", objective: "Loi d'Ohm + immunité",
+  { week: 6, date: "2026-06-17", day: "Mer.", subject: "sc", quest: "Sciences : Électricité + corps humain + climat + risques", objective: "Survol des derniers chapitres", duration: "1h30",
     steps: [
-      { t: "Électricité 30 min", x: "Tension (U, en volts), intensité (I, en ampères), résistance (R, en ohms). Loi d'Ohm : U = R × I. Schéma de circuit avec dipôles en série / dérivation. Calculer une grandeur connaissant les 2 autres." },
-      { t: "Corps humain 30 min", x: "SVT — système immunitaire (défenses naturelles, réaction inflammatoire, lymphocytes, vaccin). Et / ou alimentation et microbiote selon ce qui a été vu en classe." }
+      { t: "Électricité 25 min", x: "Tension (U, volts), intensité (I, ampères), résistance (R, ohms). Loi d'Ohm : U = R × I. Schéma : dipôles en série / dérivation. 1 calcul." },
+      { t: "Corps humain 25 min", x: "Système immunitaire (défenses naturelles, lymphocytes, vaccin). Reproduction humaine : puberté, fécondation, contraception." },
+      { t: "Climat 25 min", x: "Effet de serre (naturel et amplifié), réchauffement climatique, gaz à effet de serre (CO₂, méthane). Climats du passé : alternance glaciaire/interglaciaire." },
+      { t: "Risques majeurs 15 min", x: "Séismes (tectonique des plaques), volcans (effusifs/explosifs), prévention. Notions : aléa, vulnérabilité, risque." }
     ]},
-  { week: 6, date: "2026-06-18", day: "Jeu.", subject: "ma", quest: "Maths — Lacune n°2", objective: "Lacune maths n°2 comblée",
+  { week: 6, date: "2026-06-18", day: "Jeu.", subject: "ma", quest: "Volumes et agrandissement-réduction", objective: "Calculer un volume + appliquer k³",
     steps: [
-      { t: "Cours 15 min", x: "Reprendre le cours du chapitre identifié comme TOP 2 maths." },
-      { t: "Exos 35 min", x: "5 exercices types brevet, difficulté croissante." },
-      { t: "Bilan 10 min", x: "Fiche-mémo." }
+      { t: "Cours 20 min", x: "Formules de volumes : pavé (L×l×h), cube (a³), cylindre (π×r²×h), cône et pyramide (Base×h ÷ 3), sphère (4/3×π×r³). Penser aux unités !" },
+      { t: "Exos 25 min", x: "3 calculs de volume sur figures différentes. Bien convertir (1 L = 1 dm³, 1 m³ = 1000 L)." },
+      { t: "Agrandissement 15 min", x: "Effet d'un facteur k : longueurs ×k, aires ×k², volumes ×k³. 1 exercice type brevet (cône réduit, pyramide tronquée)." }
     ]},
 
   // ===== SEMAINE 7 : 19-25 juin — Annales par discipline =====
@@ -1138,14 +1164,16 @@ const PLAN = [
       { t: "Annale 45 min", x: "1 annale brevet sciences sur les 2 disciplines tirées : SVT et physique-chimie." },
       { t: "Auto-correction 15 min", x: "Vérifier le respect des consignes, le vocabulaire scientifique, les unités." }
     ]},
-  { week: 7, date: "2026-06-24", day: "Mer.", subject: "ma", quest: "Maths — Synthèse", objective: "Stabiliser les acquis",
+  { week: 7, date: "2026-06-24", day: "Mer.", subject: "ma", quest: "Puissances et transformations", objective: "Notation scientifique + symétries",
     steps: [
-      { t: "Relecture 30 min", x: "Relire toutes les fiches maths (Pythagore, Thalès, triangles semblables, trigo, calcul littéral, fonctions linéaire et affine)." },
-      { t: "Mini-exo 30 min", x: "1 exercice court sur chacun des 3 thèmes les plus importants. Pas de stress, juste pour vérifier." }
+      { t: "Puissances 25 min", x: "Règles de calcul (10⁵ × 10³, (10²)³, 10⁻²). Notation scientifique : a × 10ⁿ avec 1 ≤ a < 10. 3 exercices : convertir, calculer, comparer." },
+      { t: "Transformations 25 min", x: "Translation (vecteur), rotation (centre, angle, sens), symétries axiale et centrale, homothétie (centre, rapport k). Reconnaître chaque transformation sur une figure." },
+      { t: "Relecture 10 min", x: "Survoler toutes les fiches maths (Pythagore, Thalès, trigo, calcul littéral, fonctions, équations, volumes, stats, proportionnalité). Pas de stress." }
     ]},
   { week: 7, date: "2026-06-25", day: "Jeu.", subject: "fr", quest: "Français — Synthèse + Logistique J–1", objective: "Réviser sereinement + sac prêt",
     steps: [
-      { t: "Relecture 30 min", x: "Relire les fiches grammaire, valeurs des temps, méthode de la rédaction." },
+      { t: "Relecture 25 min", x: "Relire les fiches grammaire, valeurs des temps, méthode de la rédaction." },
+      { t: "Figures + registres 15 min", x: "Survol rapide de la fiche figures de style + registres de langue (familier/courant/soutenu) + énonciation (narrateur, point de vue)." },
       { t: "Logistique 15 min", x: "Préparer le sac : convocation, pièce d'identité, 2 stylos bleus, blanc, crayon, gomme, règle, calculatrice + piles." },
       { t: "Sommeil", x: "Se coucher tôt. Pas d'écran après 21h." }
     ]},
@@ -1405,7 +1433,10 @@ function renderToday() {
           <div class="today-date">${dateLabel}</div>
           <div class="today-quest">${item.quest}</div>
         </div>
-        <div class="today-tag tag-${item.subject}">${SUBJECTS[item.subject]}</div>
+        <div style="text-align: right;">
+          <div class="today-tag tag-${item.subject}">${SUBJECTS[item.subject]}</div>
+          ${item.duration ? `<div class="duration-badge">⏱ ${item.duration}</div>` : ''}
+        </div>
       </div>
       ${isOff ? '' : `<div class="steps">${stepsHTML}</div>`}
       <div class="objective">
@@ -1486,7 +1517,7 @@ function renderWeeks() {
           <div class="day-pill"><span class="d-day">${item.day}</span><br>${formatDateFR(item.date).replace(/\s/g, '\u00a0')}</div>
           <div class="day-meta">
             <div class="day-quest">${item.quest}</div>
-            <div class="day-subject">${SUBJECTS[item.subject]}</div>
+            <div class="day-subject">${SUBJECTS[item.subject]}${item.duration ? ` · ⏱ ${item.duration}` : ''}</div>
           </div>
           <div class="day-toggle">▾</div>
         </div>
