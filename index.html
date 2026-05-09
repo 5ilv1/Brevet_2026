@@ -107,6 +107,20 @@ body::before {
   text-shadow: 0 0 10px var(--accent-glow);
   line-height: 1;
 }
+.sync-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  vertical-align: middle;
+  margin-left: 4px;
+  margin-bottom: 4px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.sync-dot.online  { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+.sync-dot.syncing { background: var(--gold);   box-shadow: 0 0 6px var(--gold-glow); }
+.sync-dot.offline { background: #ef4444;       box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
 .subtitle {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
@@ -754,7 +768,7 @@ body::before {
   <div class="hud">
     <div class="hud-row">
       <div>
-        <div class="title">BREVET 2026</div>
+        <div class="title">BREVET 2026 <span class="sync-dot" id="syncDot" title="État sync"></span></div>
         <div class="subtitle">// Quête finale · 47 jours</div>
       </div>
       <div class="countdown">
@@ -1171,11 +1185,22 @@ const SUPABASE_URL = 'https://ktgfqulpndzetiyagupy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z2ZxdWxwbmR6ZXRpeWFndXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjg0NzgsImV4cCI6MjA5MzkwNDQ3OH0.FjdceOomhCVngIHAumVW8giG7vvyAFD4huv6FE8NREI';
 const ROW_ID = 'main';
 const CACHE_KEY = 'brevet2026_v3'; // cache local hors-ligne
+const POLL_MS = 8000;               // filet de sécurité quand le WebSocket meurt (iOS background)
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let state = loadCache();
 let saveTimer = null;
+let lastUpdatedAt = '';   // ISO de la dernière donnée reçue/écrite, pour ignorer les échos
+let realtimeChannel = null;
+
+function setSyncStatus(s) {
+  const dot = document.getElementById('syncDot');
+  if (!dot) return;
+  dot.classList.remove('online', 'syncing', 'offline');
+  if (s) dot.classList.add(s);
+  dot.title = s === 'online' ? 'Sync OK' : s === 'syncing' ? 'Sync en cours...' : 'Hors ligne';
+}
 
 function loadCache() {
   try {
@@ -1191,21 +1216,31 @@ function writeCache() {
 
 function saveState() {
   writeCache();
+  setSyncStatus('syncing');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
+    const ts = new Date().toISOString();
     const { error } = await supabase
       .from('progress')
-      .update({
-        completed: state.completed,
-        steps_done: state.stepsDone,
-        updated_at: new Date().toISOString()
-      })
+      .update({ completed: state.completed, steps_done: state.stepsDone, updated_at: ts })
       .eq('id', ROW_ID);
-    if (error) console.warn('Sync DB échouée', error);
+    if (error) {
+      console.warn('Sync DB échouée', error);
+      setSyncStatus('offline');
+    } else {
+      lastUpdatedAt = ts;
+      setSyncStatus('online');
+    }
   }, 250);
 }
 
 function applyRemoteState(row) {
+  // Si on a une écriture locale en attente, NE PAS écraser : nos clics récents primeraient
+  if (saveTimer) return;
+  // Ne ren-render que si c'est vraiment plus récent que ce qu'on a déjà
+  const incoming = row.updated_at || '';
+  if (incoming && incoming <= lastUpdatedAt) return;
+  lastUpdatedAt = incoming;
   state.completed = row.completed || {};
   state.stepsDone = row.steps_done || {};
   writeCache();
@@ -1213,6 +1248,39 @@ function applyRemoteState(row) {
   renderToday();
   renderWeeks();
   renderStats();
+}
+
+async function fetchOnce() {
+  const { data, error } = await supabase
+    .from('progress')
+    .select('completed, steps_done, updated_at')
+    .eq('id', ROW_ID)
+    .single();
+  if (error) {
+    setSyncStatus('offline');
+    return null;
+  }
+  setSyncStatus('online');
+  return data;
+}
+
+function subscribeRealtime() {
+  if (realtimeChannel) {
+    try { supabase.removeChannel(realtimeChannel); } catch (e) {}
+  }
+  realtimeChannel = supabase
+    .channel('progress-main')
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'progress', filter: `id=eq.${ROW_ID}` },
+      (payload) => {
+        console.log('[RT] update reçu', payload.new);
+        applyRemoteState(payload.new);
+      })
+    .subscribe((status) => {
+      console.log('[RT] subscription status:', status);
+      if (status === 'SUBSCRIBED') setSyncStatus('online');
+      else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') setSyncStatus('offline');
+    });
 }
 
 // ============== HELPERS ==============
@@ -1535,21 +1603,15 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 // ============== INIT ==============
 async function init() {
   // 1) Render immédiat depuis le cache local (paint rapide même offline)
+  setSyncStatus('syncing');
   renderHud();
   renderToday();
   renderWeeks();
   renderStats();
 
   // 2) Fetch frais depuis Supabase
-  const { data: remote, error } = await supabase
-    .from('progress')
-    .select('completed, steps_done')
-    .eq('id', ROW_ID)
-    .single();
-
-  if (error) {
-    console.warn('Fetch DB échoué, mode hors-ligne', error);
-  } else if (remote) {
+  const remote = await fetchOnce();
+  if (remote) {
     const remoteHasData =
       Object.keys(remote.completed || {}).length > 0 ||
       Object.keys(remote.steps_done || {}).length > 0;
@@ -1562,27 +1624,36 @@ async function init() {
     } else if (cacheHasData) {
       // Premier sync : on pousse le cache local vers la DB
       saveState();
+    } else {
+      lastUpdatedAt = remote.updated_at || '';
     }
   }
 
   // 3) Realtime : changements live des autres appareils
-  supabase
-    .channel('progress-main')
-    .on('postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'progress', filter: `id=eq.${ROW_ID}` },
-      (payload) => applyRemoteState(payload.new))
-    .subscribe();
+  subscribeRealtime();
 
-  // 4) Re-fetch quand l'onglet redevient visible (coup de filet de sécurité)
+  // 4) Polling de secours (8s) — couvre les cas où le WS meurt sans qu'on le sache (iOS background, perte réseau)
+  setInterval(async () => {
+    if (document.visibilityState !== 'visible') return; // pas de polling en arrière-plan
+    const data = await fetchOnce();
+    if (data) applyRemoteState(data);
+  }, POLL_MS);
+
+  // 5) Quand l'onglet redevient visible : refetch immédiat + re-souscription au channel (le WS a souvent été tué par iOS)
   document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState !== 'visible') return;
-    const { data, error } = await supabase
-      .from('progress')
-      .select('completed, steps_done')
-      .eq('id', ROW_ID)
-      .single();
-    if (!error && data) applyRemoteState(data);
+    const data = await fetchOnce();
+    if (data) applyRemoteState(data);
+    subscribeRealtime();
   });
+
+  // 6) Reconnexion réseau
+  window.addEventListener('online', async () => {
+    const data = await fetchOnce();
+    if (data) applyRemoteState(data);
+    subscribeRealtime();
+  });
+  window.addEventListener('offline', () => setSyncStatus('offline'));
 }
 init();
 
